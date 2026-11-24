@@ -25,4 +25,9 @@
     <PackageReference Include="RhinoCommon" Version="8.0.23304.9001" ExcludeAssets="runtime" />
   </ItemGroup>
 
+  <!-- Every Release build copies the Rhino 8 plug-in to dist/ so it can be committed and downloaded from GitHub. -->
+  <Target Name="CopyPluginToDist" AfterTargets="Build" Condition="'$(Configuration)' == 'Release' AND '$(TargetFramework)' == 'net7.0'">
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(MSBuildProjectDirectory)/dist" />
+  </Target>
+
 </Project>

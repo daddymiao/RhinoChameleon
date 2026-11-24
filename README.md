@@ -74,14 +74,53 @@ Your option choices are kept between sessions. Each hatch also stores user text 
 4. Writes a solid hatch per region (merging touching pieces of the same face) and the line work, on
    the layer tree described above.
 
-## Building
+## Installing and updating
+
+The ready-to-use plug-in is always at **`dist/Chameleon.rhp`** in this repo (Rhino 8, Mac and
+Windows). It is rebuilt and committed with every code change.
+
+### Install once
+1. Clone this repo somewhere permanent, e.g. `~/Documents/RhinoChameleon`. If you would rather not
+   use git, download `dist/Chameleon.rhp` into a permanent folder instead.
+2. Load the plug-in into Rhino **from that location**, once:
+   * **Windows:** drag `dist/Chameleon.rhp` onto the Rhino window, or use
+     **Tools → Options → Plug-ins → Install…**
+   * **Mac:** dragging an `.rhp` onto Rhino for Mac opens the import prompt, so run this once
+     instead. Type `ScriptEditor`, create a new **C#** script, paste the code below, click **Run** and
+     pick `dist/Chameleon.rhp`. The command line should say `Chameleon install: Success`.
+     ```csharp
+     // #! csharp
+     using System;
+     using Rhino;
+
+     var dialog = new Rhino.UI.OpenFileDialog { Title = "Choose Chameleon.rhp", Filter = "Rhino plug-in (*.rhp)|*.rhp" };
+     if (dialog.ShowOpenDialog())
+     {
+         var result = Rhino.PlugIns.PlugIn.LoadPlugIn(dialog.FileName, out Guid id);
+         RhinoApp.WriteLine($"Chameleon install: {result}");
+     }
+     ```
+
+### Update to a new version (no script, no reinstall)
+Rhino remembers *where* it loaded the plug-in from and reloads that file every time it starts. To
+update, replace the file at that same location:
+1. **Quit Rhino.**
+2. Get the new file:
+   * if you cloned the repo, run `git pull` in it (or click **Pull** in GitHub Desktop);
+   * if you downloaded the file, download the new `dist/Chameleon.rhp` over the old one, with
+     the same name in the same folder.
+3. Start Rhino. The new version loads.
+
+Don't move or rename the file after installing. If you do, run the one-time install again from the
+new location.
+
+## Building from source
 ```
 dotnet build -c Release
 ```
-This produces `bin/Release/net7.0/Chameleon.rhp` (Rhino 8, Windows and Mac) and `bin/Release/net48/Chameleon.rhp`
-(Rhino 8 running on .NET Framework). Drag the `.rhp` into Rhino or use `PluginManager → Install`.
-In VS Code or Visual Studio, the "Rhino 8 - netcore" launch profile starts Rhino with the plug-in
-loaded.
+This needs the .NET 8 SDK. It produces `bin/Release/net7.0/Chameleon.rhp` and
+`bin/Release/net48/Chameleon.rhp`, and copies the `net7.0` build to `dist/Chameleon.rhp`. In VS
+Code or Visual Studio, the "Rhino 8 - netcore" launch profile starts Rhino with the plug-in loaded.
 
 ## Known limits
 * **Clipping planes / section cuts are not handled yet.** Fills inside a section cut would be taken
